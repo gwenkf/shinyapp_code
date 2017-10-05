@@ -23,30 +23,28 @@ function(input, output) {
         + ylab("Death Rates") + theme_base())
     })
     
-    myYear <- reactive({
-      input$selYear
+    YearInput = reactive({
+      year = input$selYear
+      droplevels(subset(byST_annualrate, Year %in% year))
     })
-    output$year <- renderText({
-      paste("Democratic share of the presidential vote in", myYear())
+    output$year = renderText({
+      paste("Democratic share of the presidential vote in", YearInput())
     })
-    output$geochart <- renderGvis({
-      myData <- byST[Year == myYear, , ]
-      gvisGeoChart(myData,
-                   "State", "rate",
+    output$geochart = renderGvis({
+      states_year <- as.data.frame(YearInput())
+      gvisGeoChart(states_year,"State", "rate",
                    options=list(region="US", displayMode="regions", 
                                 resolution="provinces",
-                                width=600, height=400,
+                                width=900, height=700,
                                 colorAxis="{colors:['#FFFFFF', '#0000FF']}"
                    ))     
     })
-    dataStatesInput = reactive({
-      chStates = input$checkStates
-      droplevels(subset(deaths_racetest, State %in% chStates))
-      
+    raceCoDInput = reactive({
+      chCause = input$checkCoD
+      droplevels(subset(raceRates_Yr, DrugAlc_induced_causes %in% chCause))
     })
-    output$statesRates = renderGvis({
-      state_data = as.data.frame(dataStatesInput())
-      linechrt = gvisLineChart(state_data, xvar="Year")
-      plot(linechrt)
+    output$raceRatesCoD = renderGvis({
+      raceYr_CoD = as.data.frame(raceCoDInput())
+      gvisColumnChart(raceYr_CoD, xvar="Year", options = list(width=700, height=500))
     })
 }
