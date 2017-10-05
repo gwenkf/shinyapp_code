@@ -43,9 +43,9 @@ drugValc_us = drugalc_deathsYR[ , .(sumdeaths = sum(as.numeric(Deaths)), rate = 
 (ggplot(drugValc_us, aes(x=Year, y=rate, group=DrugAlc_induced_causes, color=DrugAlc_induced_causes)) + geom_point(size=1.5) + geom_line(size=1) + theme_base()
   + ylab("Death Rate") + scale_color_brewer(palette = "Dark2", labels = c("Alcohol-Induced", "Drug-Induced"),guide_legend(title="Cause of Death")))
 
+
 deaths_Race = deaths_ALLraceAge[ , .(sumdeaths = sum(as.numeric(Deaths)), rate = (sum(as.numeric(Deaths)))/(sum(as.numeric(Population)))), by = .(Year, Race, DrugAlc_induced_causes)][order(-Year)]
 (ggplot(data=deaths_Race, aes(x=Year, y=rate, group=Race, color=Race)) + geom_point(size=1.5) + geom_line(size=1) + scale_color_brewer(palette = "Dark2") + ylab("Death Rate") + theme_base())
-
 deaths_age = deaths_ALLraceAge[ , .(sumdeaths = sum(as.numeric(Deaths)), rate = (sum(as.numeric(Deaths)))/(sum(as.numeric(Population)))), by = .(Year, TenYr_AgeGrps)][order(-Year)]
 (ggplot(data=deaths_age,aes(x=Year, y=rate, group=TenYr_AgeGrps, color=TenYr_AgeGrps)) + geom_point() + geom_line())
 
@@ -65,13 +65,17 @@ treemap(tree_race15, index = c("DrugAlc_induced_causes","Race" ,"DeathsN"), vSiz
 
 #MAP
 library(rgdal) 
+library(usmap)
+
+mapdata = map_with_data(data = fipsDeaths_2015, values = "Deaths", na=NA)
+
 setwd("/Users/gfern/Downloads")
 
 counties = readOGR(dsn="cb_2015_us_county_5m", layer="cb_2015_us_county_5m")
 plot(counties)
 
-deathrates2015 = drug_alc_deaths[Year == 2015, .(County_code, Deaths), ]
-deathrates2015p = as.data.frame(deathrates2015)
+deathrates2015County = drug_alc_deaths[Year == 2015, .(fips = County_code, Deaths), by = County ]
+fipsDeaths_2015 = deathrates2015County[ , .(fips, Deaths),]
 
 county_map = map("county")
 fips_codes = 
