@@ -23,6 +23,10 @@ fluidPage(
                  mainPanel(
                    sliderInput(inputId = "selYear", label = h3("Please Select A Year:"), min = 1999, 
                                max = 2015, value = c(2015), step = 1, round = TRUE, sep = "", ticks = TRUE,width = 500),
+                   radioButtons("causebutton", label = h3("Select a Cause of Death:"),
+                                choices = list("Drug-Induced" = "Drug-Induced Causes", "Alcohol-Induced" = "Alcohol-Induced Causes",
+                                               "Both" = "Total"), 
+                                selected = "Total"),
                    htmlOutput("geochart")
                  )
         ),
