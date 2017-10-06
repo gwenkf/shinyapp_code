@@ -54,27 +54,36 @@ deaths_Race = RaceGender[, .(annualrate = (sum(as.numeric(Deaths))/(sum(as.numer
 deaths_Race = na.omit(deaths_Race)
 (ggplot(data=deaths_Race, aes(x=Year, y=rate, group=Race, color=Race)) + geom_point(size=1.5) + geom_line(size=1) + scale_color_brewer(palette = "Dark2") + ylab("Death Rate") + theme_base())
 
-deaths_racetest = spread(deaths_Race, Race, annualrate, fill=NA)
+raceRates_Yr = RaceGender[ , .(annualrate = (sum(as.numeric(Deaths))/(sum(as.numeric(Population)))*1000)/365), by = .(Year, Race, DrugAlc_induced_causes)]
+raceRates_Yr = spread(raceRates_Yr, Race, annualrate)
 
-
-Line1 <- gvisLineChart(deaths_racetest, xvar="Year", yvar=c("American Indian or Alaska Native", "Asian or Pacific Islander", "Black or African American", "Hispanic or Latino", "White"))
+Line1 <- gvisColumnChart(raceRates_Yr, xvar="Year", yvar=c("American Indian or Alaska Native", "Asian or Pacific Islander", "Black or African American", "Hispanic or Latino", "White"))
 plot(Line1)
 
 deaths_Gender = RaceGender[, .(sumdeaths = sum(as.numeric(Deaths)), annualrate = (sum(as.numeric(Deaths))/(sum(as.numeric(Population)))*1000)/365), by = .(Year, Gender)][order(-Year)]
 (ggplot(data=deaths_Gender, aes(x=Year, y=annualrate, group=Gender, color=Gender)) + geom_point(size=1.5) + geom_line(size=1)
   + scale_color_manual(values = c("#de2d26", "#fc9272")) + ylab("Death Rates"))
 
+deaths_Age = GenderAge[, .(annualrate = ((sum(as.numeric(Deaths))/(sum(as.numeric(Population)))*1000)/365)*100), by = .(Year, Age_grps, DrugAlc_induced_causes)]
+ggplot(data=deaths_Age, aes(x=Year, y=annualrate, fill=Age_grps)) + geom_col(position = "dodge") 
+
+
+
 states = Totals_cause[ , .(State), by = State]
 state_names = states$State
 
 #MAP
-byST = RaceGender[, .(rate = sum(as.numeric(Deaths))/sum(as.numeric(Population))), by = .(State,Year)]
-byST2015$State <- tolower(byST2015$State)
-byST$Year = as.numeric(byST$Year)
+byST_annualrate = Totals_cause[, .(rate = ((sum(as.numeric(Deaths))/(sum(as.numeric(Population)))*1000)/365)*100), by = .(State, Year)]
+
+byST_cruderate = Totals_cause[ , .(rate = sum(as.numeric(Deaths))/sum(as.numeric(Population))), by = .(State, Year)]
+
+byST_Drug = Totals_cause[DrugAlc_induced_causes == "Drug-Induced Causes", .(rate = (sum(as.numeric(Deaths))/(sum(as.numeric(Population)))*1000)/365), by = .(State, Year)] 
+
+byST_Alcohol = Totals_cause[DrugAlc_induced_causes == "Alcohol-Induced Causes", .(rate = (sum(as.numeric(Deaths))/(sum(as.numeric(Population)))*1000)/365), by = .(State, Year)]
 
 require(datasets)
 states <- data.frame(state.name, state.x77)
-GeoStates <- gvisGeoChart(byST, "State", "rate",
+GeoStates <- gvisGeoChart(bySTtest, "State", "cruderate",
                           options=list(region="US", 
                                        displayMode="regions", 
                                        resolution="provinces",
