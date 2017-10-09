@@ -1,13 +1,11 @@
 library(shiny)
-library(data.table)
 library(ggplot2)
-library(ggmap)
 library(ggthemes)
 library(googleVis)
 library(tidyr)
 library(dplyr)
-library(scales)
 library(plotly)
+library(shinythemes)
 require(datasets)
 
 Totals_cause = fread("./data/STdrugalcdeath_cause1599.csv", header = FALSE, stringsAsFactors = FALSE, 
@@ -38,14 +36,15 @@ RaceGender = RaceGender[-c(1),]
 RaceGender = RaceGender[Race != "Not Stated"&Race != "Not Hispanic or Latino", , ]
 RaceGender = na.omit(RaceGender)
 
-CauseLabel = list(title = "Cause of Death", size = 20, color = "#17202A")
-PrctLabel = list(title = "Percentage of Deaths", size = 20, color = "#17202A")
-AgeLabel = list(title = "Ten Year Age Groups", size = 20, color = "#17202A")
-YearLabel = list(title = "Year", size = 20, color = "#17202A")
-TotalLabel = list(title = "Number of Deaths", size = 20, color = "#17202A")
+CauseLabel = list(title = "Cause of Death", size = 13, color = "#17202A")
+PrctLabel = list(title = "Percentage of Deaths", size = 13, color = "#17202A")
+AgeLabel = list(title = "Ten Year Age Groups", size = 13, color = "#17202A")
+YearLabel = list(title = "Year", size = 13, color = "#17202A")
+TotalLabel = list(title = "Number of Deaths", size = 13, color = "#17202A")
+Font = list(family = "Serif", size = 13, color = "black")
 
 
-ui = fluidPage(
+ui = fluidPage(theme = shinytheme("cosmo"),
   titlePanel(h1("Exploring Mortality Rates by Drug and Alcohol Use in the United States")),
   mainPanel(
     tabsetPanel(
@@ -61,8 +60,9 @@ ui = fluidPage(
                     which populations are dying due to drug and alcohol use, and where they are dying."))
                ),
                mainPanel(
+                 br(),
                  fluidRow(
-                          splitLayout(cellWidths = c("95%", "105%"), plotlyOutput("avgdeaths_cause"), plotOutput("annualmortrate")))
+                          splitLayout(cellWidths = c("115%", "105%"), plotlyOutput("avgdeaths_cause"), plotOutput("annualmortrate")))
                )
       ),
       tabPanel("Percentage of Deaths Across US States",
@@ -83,37 +83,31 @@ ui = fluidPage(
       ),
       tabPanel("Racial Breakdown",
                fluidRow(
-                 h4("How do annual mortality rates differ across racial and ethnic categories?"),
-                 column(6,
-                        radioButtons("racebutton", label = h3("Select Race/Ethnicity:"),
-                                     choices = list("Black or African American", "American Indian or Alaska Native",
-                                                    "Asian or Pacific Islander", "White", "Hispanic or Latino"), 
-                                     selected = "Black or African American")),
-                 column(6,
-                        sliderInput(inputId = "slideYear", label = h3("Please Select A Year:"), min = 1999, 
-                                    max = 2015, value = c(2015), step = 1, round = TRUE, sep = "", ticks = TRUE,width = 500))
+                 h3("How do annual mortality rates differ across racial and ethnic categories? How much do rates of mortality differ between age groups?
+                    The following graphs visualize the trends in mortality rates across age groups and racial categories.FINISH WRITING")
                  ),
                mainPanel(
-                 splitLayout(cellWidths = c("110%", "100%", "100%"), 
-                 plotOutput("AllDeaths_Race"),
+                 splitLayout(cellWidths = c("115%", "40%", "70%"), plotOutput("AllDeaths_Race"),
+                             (radioButtons("racebutton", label = h3("Select Race/Ethnicity:"),choices = list("Black or African American", "American Indian or Alaska Native",
+                                                                                   "Asian or Pacific Islander", "White", "Hispanic or Latino"), selected = "Black or African American")),
+                             (sliderInput(inputId = "slideYear", label = h3("Please Select A Year:"), min = 1999, 
+                                    max = 2015, value = c(2015), step = 1, round = TRUE, sep = "", ticks = TRUE,width = 500))), 
+                 br(),
+                 splitLayout(cellWidths = c("100%", "100%"), 
                  plotlyOutput("DrugVAlc_raceYear"),
                  plotlyOutput("annualmortrate_Age"))
                )
       ),
       tabPanel("Breakdown by Gender",
                fluidRow(
-                 column(6,
-                        radioButtons("genderbutton", label = h3("Select Sex:"),
-                                     choices = list("Female", "Male"), 
-                                     selected = "Female"),
-                        sliderInput(inputId = "slideYearGen", label = h3("Please Select a Year"), min = 1999,
-                                    max = 2015, value = c(2015), step=1, round = TRUE, sep = "", ticks = TRUE, width = 500)
-                 )
+                 h3("Write some text here")
                ),
                mainPanel(
-                 column(12,
-                 plotOutput("annualmortrate_Gender"),
-                 plotlyOutput("DrugVAlc_GenYear"),
+                 splitLayout(cellWidths = c("115%", "40%", "70%") ,plotOutput("annualmortrate_Gender"), (radioButtons("genderbutton", label = h3("Select Sex:"), choices = list("Female", "Male"), 
+                            selected = "Female")), (sliderInput(inputId = "slideYearGen", label = h3("Please Select a Year"), min = 1999, max = 2015,
+                            value = c(2015), step=1, round = TRUE, sep = "", ticks = TRUE, width = 500))),
+                 br(),
+                 splitLayout(cellWidths = c("100%", "100%"),plotlyOutput("DrugVAlc_GenYear"),
                  plotlyOutput("Age_GenYear"))
                )
       )
@@ -127,7 +121,7 @@ server = function(input, output) {
                       %>% group_by(DrugAlc_induced_causes) %>% summarise(avgdeaths = sum(as.numeric(Deaths))))
     (plot_ly(x = avg_totalCause$DrugAlc_induced_causes, y = avg_totalCause$avgdeaths, 
              name = "Total Drug & Alcohol Related Deaths in the USA, 1999-2015",
-             type = "bar", color = I("#DC7633"), width = 1) %>% layout(xaxis = CauseLabel, yaxis = TotalLabel))
+             type = "bar", marker = list(color = c("#2874A6")),width = 1) %>% layout(xaxis = CauseLabel, yaxis = TotalLabel, title = "Total Drug & Alcohol Related Deaths in the USA, 1999-2015", font=Font))
   })
   
   output$annualmortrate = renderPlot({
@@ -135,7 +129,8 @@ server = function(input, output) {
     %>% summarise(rate = (sum(as.numeric(Deaths))/(sum(as.numeric(Population)))*1000)/365))
     (ggplot(data=deathsTotalYr, aes(x=Year, y=rate, group=1)) + geom_line(color="#1c9099",size=1) 
       + geom_point(color="#1c9099", size=2, shape = 23, fill="#1c9099")
-      + theme_base() + ylab("Death Rate") + ggtitle("Annual Mortality by Drug and Alcohol Use, 1999-2015"))
+      + theme_bw() + theme(plot.title = element_text(family = "serif", color = "black", size = 18), axis.title = element_text(family = "serif", color = "black", size = 16))
+      + ylab("Mortality Rate") + ggtitle("Annual Mortality by Drug and Alcohol Use, 1999-2015"))
   })
   
   raceInput = reactive({
@@ -151,16 +146,18 @@ server = function(input, output) {
   
   output$annualmortrate_Age = renderPlotly({
     edit_data = as.data.frame(filter_RaceYr())
-    edit_data = edit_data %>% group_by(Age_grps) %>% summarise(rate = ((sum(as.numeric(Deaths))/(sum(as.numeric(Population))*1000)/365)*100))
-    (plot_ly(x = edit_data$Age_grps, y = edit_data$rate, name = "Percentage of Deaths by Age Group",
-            type = "bar", color = I("#DC7633"), width = 1) %>% layout(xaxis = AgeLabel, yaxis = PrctLabel))
+    edit_data = edit_data %>% group_by(Age_grps, DrugAlc_induced_causes) %>% summarise(rate = ((sum(as.numeric(Deaths))/(sum(as.numeric(Population))*1000)/365)*100))
+    edit_data = spread(data = edit_data, key = DrugAlc_induced_causes, value = rate)
+    (plot_ly(x = edit_data$Age_grps, y = edit_data$`Alcohol-Induced Causes`, name = "Alcohol-Induced", showlegend = TRUE,
+            type = "bar", width = 1) %>% add_trace(y = edit_data$`Drug-Induced Causes`, name = "Drug-Induced")
+      %>% layout(xaxis = AgeLabel, yaxis = PrctLabel, title = "Percentage of Deaths by Age Group", font=Font, barmode = "stack"))
   })
   
   output$DrugVAlc_raceYear = renderPlotly({
     plot4 = as.data.frame(filter_RaceYr())
     plot4 = plot4 %>% group_by(DrugAlc_induced_causes) %>% summarise(rate = ((sum(as.numeric(Deaths))/(sum(as.numeric(Population))*1000)/365)*100))
     (plot_ly(x = plot4$DrugAlc_induced_causes, y = plot4$rate, name = "Percentage of Drug & Alcohol Related Deaths",
-            type = "bar", color = I("#DC7633"), width = 1) %>% layout(xaxis = CauseLabel, y = PrctLabel))
+            type = "bar", marker = list(color = c("#2874A6")), width = 1) %>% layout(xaxis = CauseLabel, y = PrctLabel, title = "Percentage of Drug & Alcohol Related Deaths", font=Font))
   })
   
   output$AllDeaths_Race = renderPlot ({
@@ -168,8 +165,8 @@ server = function(input, output) {
     plot5 = (plot5 %>% filter(Race == raceInput()) %>% group_by(Year) 
     %>% summarise(rate = (sum(as.numeric(Deaths))/(sum(as.numeric(Population)))*1000)/365))
     (ggplot(data = plot5, aes(x = Year, y = rate, group = 1)) + geom_point(size = 2, shape = 23, color = "#1c9099", fill="#1c9099") 
-      + geom_line(color = "#1c9099") + theme_base() + ggtitle("Annual Mortality by Drug & Alcohol Use") + xlab("Year")
-      + ylab("Mortality Rate")) 
+      + geom_line(color = "#1c9099", size=1) + theme_bw() + theme(plot.title = element_text(family = "serif", color = "black", size = 18), axis.title = element_text(family = "serif", color = "black", size = 16)) + ggtitle("Annual Mortality by Drug & Alcohol Use") 
+      + xlab("Year") + ylab("Mortality Rate")) 
   })
   
   YearGen_Input = reactive ({
@@ -186,24 +183,26 @@ server = function(input, output) {
   
   output$annualmortrate_Gender = renderPlot({
     plotDeathsGender = (GenderAge %>% filter(Gender == Gen_Input()) %>% group_by(Year) 
-    %>% summarise(rate = ((sum(as.numeric(Deaths))/(sum(as.numeric(Population)))*1000)/365)*100))
+    %>% summarise(rate = (sum(as.numeric(Deaths))/(sum(as.numeric(Population)))*1000)/365))
     (ggplot(data=plotDeathsGender, aes(x=Year, y=rate, group=1)) + geom_point(size=2, shape=23, color="#1c9099", fill = "#1c9099") 
-      + geom_line(size=1, color="#1c9099") 
-      + ylab("Death Rate") + theme_base() + ggtitle("Annual Mortality Rates by Gender, 1999-2015"))
+      + geom_line(size=1, color="#1c9099") + ylab("Mortality Rate") + theme_bw() 
+      + theme(plot.title = element_text(family = "serif", color = "black", size = 18), axis.title = element_text(family = "serif", color = "black", size = 16)) 
+      + ggtitle("Annual Mortality Rates by Gender, 1999-2015"))
   })
   
   output$DrugVAlc_GenYear = renderPlotly({
     DrugValc_gender = as.data.table(filterGen())
     DrugValc_gender = DrugValc_gender %>% group_by(DrugAlc_induced_causes) %>% summarise(rate = ((sum(as.numeric(Deaths))/(sum(as.numeric(Population)))*1000)/365)*100)
     (plot_ly(x = DrugValc_gender$DrugAlc_induced_causes, y = DrugValc_gender$rate, name = "Percentage of Drug & Alcohol Related Deaths",
-            type = "bar", color = I("#DC7633"), width = 1) %>% layout(xaxis = CauseLabel, yaxis = PrctLabel))
+            type = "bar", marker = list(color = c("#2874A6")), width = 1) %>% layout(xaxis = CauseLabel, yaxis = PrctLabel, title = "Percentage of Drug & Alcohol Related Deaths", font = Font))
   })
   
   output$Age_GenYear = renderPlotly({
     Gender_age = as.data.table(filterGen())
-    Gender_age = (Gender_age %>% group_by(Age_grps) %>% summarise(rate = ((sum(as.numeric(Deaths))/(sum(as.numeric(Population)))*1000)/365)*100))
-    (plot_ly(x = Gender_age$Age_grps, y = Gender_age$rate, name = "Percentage of Deaths by Age Group", type = "bar",
-            color = I("#DC7633"), width = 1) %>% layout(xaxis = AgeLabel, yaxis = PrctLabel))
+    Gender_age = (Gender_age %>% group_by(Age_grps, DrugAlc_induced_causes) %>% summarise(rate = ((sum(as.numeric(Deaths))/(sum(as.numeric(Population)))*1000)/365)*100))
+    Gender_age = spread(data = Gender_age, key = DrugAlc_induced_causes, value = rate)
+    (plot_ly(x = Gender_age$Age_grps, y = Gender_age$`Alcohol-Induced Causes`, name = "Alcohol-Induced", type = "bar", showlegend = TRUE,
+      width = 1) %>% add_trace(y = Gender_age$`Drug-Induced Causes`, name = "Drug-Induced") %>% layout(xaxis = AgeLabel, yaxis = PrctLabel, title = "Percentage of Deaths by Age Group", font = Font, barmode="stack"))
   })
   
   YearInput = reactive({
@@ -226,6 +225,7 @@ server = function(input, output) {
                               colorAxis="{colors:['#FDEDEC', '#E74C3C']}"
                  ))     
   })
+  
 }
 
 shinyApp(ui = ui, server = server)
