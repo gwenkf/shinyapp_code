@@ -9,6 +9,7 @@ library(plotly)
 library(shinythemes)
 require(datasets)
 
+
 Totals_cause = fread("./data/STdrugalcdeath_cause1599.csv", header = FALSE, stringsAsFactors = FALSE, 
                      col.names = c("State","State_code","Year","Year_code","DrugAlc_induced_causes","DrugAlc_induced_code",
                                    "Deaths","Population","Crude_rate","Rate_LowerConfInt","Rate_UpperConfInt","Rate_StErr"))
@@ -50,8 +51,13 @@ ui = fluidPage(theme = shinytheme("cosmo"),
   mainPanel(
     tabsetPanel(
       tabPanel("Project Overview",
+               br(),
+               br(),
                fluidRow(
-                 column(12, h3("The prevalance of drug and alcohol abuse is one of the largest pulic health issues in the United States, particularly
+                 splitLayout(cellWidths = c("50%", "50%"), plotlyOutput("avgdeaths_cause"), plotOutput("annualmortrate"))
+               ),
+               fluidRow(
+                 column(12, h3("The prevalance of drug and alcohol abuse is one of the biggest public health concerns in the United States, particularly
                     as we find ourselves in the midst of what many are calling an 'opioid epidemic.' Drug and Alcohol dependency is an indiscriminate disease,
                     affecting people of all backgrounds across diverse communities. Using mortality data disseminated by the Center for Disease Control, 
                     I have set out to discover some of the common trends behind drug and alcohol related mortality in the United States between the years of
@@ -64,9 +70,6 @@ ui = fluidPage(theme = shinytheme("cosmo"),
                     the interactive charts in any of the following three tabs."))
                ),
                mainPanel(
-                 br(),
-                 fluidRow(
-                          splitLayout(cellWidths = c("105%", "105%"), plotlyOutput("avgdeaths_cause"), plotOutput("annualmortrate")))
                )
       ),
       tabPanel("Percentage of Deaths Across US States",
@@ -74,29 +77,33 @@ ui = fluidPage(theme = shinytheme("cosmo"),
                  h2("Mapping Death Rates Across the US"),
                  h3("The map below depicts the percentage of deaths that have occurred in each US state due to drug and alcohol use. The annual mortality rate
                    for each state was converted to a percentage and can be viewed across the years 1999 to 2015 and according to the immediate cause of death of the deceased using the radio buttons and slider bar.
-                    Geographical differences in terms of the more prevalent cause of death can be observed across the years. Between 2012 and 2015 in particular, it appears that
-                    alcohol-related deaths occurred in higher concentration in states along the west coast, while drug-related deaths were more
-                    concentrated towards the east coast.")
+                    Geographical differences in terms of the prevalence of both causes of death can be observed across the years. Comparison of the 1999 and 2015 maps show 
+                    geographical change in the concentration of drug and alcohol related deaths. In 1999 we can see a higher concentration of drug and alcohol related deaths within
+                    the western states, yet by 2015, we see a number of states along the east cost with comparable rates. In terms of the more
+                    prevalent cause of death, the map shows that between 2012 and 2015 in particular, alcohol-related deaths occurred in higher concentration in states along the west coast, 
+                    while drug-related deaths were more concentrated towards the east coast.")
                ),
                mainPanel(
-                 radioButtons("causebutton", label = h3("Select a Cause of Death:"),
+                 splitLayout(cellWidths = c("40%","70%"), radioButtons("causebutton", label = h3("Select a Cause of Death:"),
                               choices = list("Drug-Induced" = "Drug-Induced Causes", "Alcohol-Induced" = "Alcohol-Induced Causes",
                                             "Both" = "Total"), selected = "Total"),
-                 splitLayout(cellWidths = c(600, "170%"), sliderInput(inputId = "selYear", label = h3("Please Select A Year:"), min = 1999, 
-                             max = 2015, value = c(2015), step = 1, round = TRUE, sep = "", ticks = TRUE,width = 500),
-                 htmlOutput("geochart"))
+                 sliderInput(inputId = "selYear", label = h3("Select A Year:"), min = 1999, 
+                             max = 2015, value = c(2015), step = 1, round = TRUE, sep = "", ticks = TRUE,width = 500)),
+                 htmlOutput("geochart")
                )
       ),
       tabPanel("Racial Breakdown",
                fluidRow(
                  h3("How do annual mortality rates differ across racial and ethnic categories? How much do rates of mortality differ between age groups?
-                    The following graphs visualize the trends in mortality rates across age groups and racial categories.FINISH WRITING")
+                    The following graphs visualize the trends in mortality rates across age groups and racial categories. The rates and percentages
+                    visualized below are extremely small yet, again, the data allow us to better characterize the popluations that are dying
+                    as a result of drug and alcohol use.")
                  ),
                mainPanel(
-                 splitLayout(cellWidths = c("115%", "40%", "70%"), plotOutput("AllDeaths_Race"),
+                 splitLayout(cellWidths = c("100%", "40%", "70%"), plotOutput("AllDeaths_Race"),
                              (radioButtons("racebutton", label = h3("Select Race/Ethnicity:"),choices = list("Black or African American", "American Indian or Alaska Native",
                               "Asian or Pacific Islander", "White", "Hispanic or Latino"), selected = "Black or African American")),
-                             (sliderInput(inputId = "slideYear", label = h3("Please Select A Year:"), min = 1999, 
+                             (sliderInput(inputId = "slideYear", label = h3("Select A Year:"), min = 1999, 
                                     max = 2015, value = c(2015), step = 1, round = TRUE, sep = "", ticks = TRUE,width = 500))), 
                  br(),
                  splitLayout(cellWidths = c("100%", "100%"), 
@@ -111,9 +118,9 @@ ui = fluidPage(theme = shinytheme("cosmo"),
                     across age groups. In both cases, the middle-aged population seems to die from alcohol use moreso than drug use.")
                ),
                mainPanel(
-                 splitLayout(cellWidths = c("115%", "40%", "70%") ,plotOutput("annualmortrate_Gender"), 
+                 splitLayout(cellWidths = c("100%", "40%", "70%") ,plotOutput("annualmortrate_Gender"), 
                              (radioButtons("genderbutton", label = h3("Select Sex:"), choices = list("Female", "Male"), 
-                            selected = "Female")), (sliderInput(inputId = "slideYearGen", label = h3("Please Select a Year"), 
+                            selected = "Female")), (sliderInput(inputId = "slideYearGen", label = h3("Select a Year"), 
                             min = 1999, max = 2015,value = c(2015), step=1, round = TRUE, sep = "", ticks = TRUE, width = 500))),
                  br(),
                  splitLayout(cellWidths = c("100%", "100%"),plotlyOutput("DrugVAlc_GenYear"),
@@ -123,6 +130,7 @@ ui = fluidPage(theme = shinytheme("cosmo"),
     )
   )
 )
+
 
 server = function(input, output) {
   output$avgdeaths_cause = renderPlotly({
@@ -137,8 +145,8 @@ server = function(input, output) {
   output$annualmortrate = renderPlot({
     deathsTotalYr = (Totals_cause %>% filter(DrugAlc_induced_causes == "Total"&Year != "") %>% group_by(Year) 
     %>% summarise(rate = (sum(as.numeric(Deaths))/(sum(as.numeric(Population)))*1000)/365))
-    (ggplot(data=deathsTotalYr, aes(x=Year, y=rate, group=1)) + geom_line(color="#1c9099",size=1) 
-      + geom_point(color="#1c9099", size=2, shape = 23, fill="#1c9099")
+    (ggplot(data=deathsTotalYr, aes(x=Year, y=rate, group=1)) + geom_line(color="#E67E22",size=1) 
+      + geom_point(color="#E67E22", size=2, shape = 23, fill="#E67E22")
       + theme_bw() + theme(plot.title = element_text(family = "serif", color = "black", size = 18), 
         axis.title = element_text(family = "serif", color = "black", size = 16))
       + ylab("Mortality Rate") + ggtitle("Annual Mortality by Drug and Alcohol Use, 1999-2015"))
@@ -176,8 +184,8 @@ server = function(input, output) {
     plot5 = as.data.frame(RaceAge)
     plot5 = (plot5 %>% filter(Race == raceInput()) %>% group_by(Year) 
     %>% summarise(rate = (sum(as.numeric(Deaths))/(sum(as.numeric(Population)))*1000)/365))
-    (ggplot(data = plot5, aes(x = Year, y = rate, group = 1)) + geom_point(size = 2, shape = 23, color = "#1c9099", fill="#1c9099") 
-      + geom_line(color = "#1c9099", size=1) + theme_bw() + theme(plot.title = element_text(family = "serif", color = "black", size = 18), 
+    (ggplot(data = plot5, aes(x = Year, y = rate, group = 1)) + geom_point(size = 2, shape = 23, color = "#E67E22", fill="#E67E22") 
+      + geom_line(color = "#E67E22", size=1) + theme_bw() + theme(plot.title = element_text(family = "serif", color = "black", size = 18), 
         axis.title = element_text(family = "serif", color = "black", size = 16)) + ggtitle("Annual Mortality by Drug & Alcohol Use") 
       + xlab("Year") + ylab("Mortality Rate")) 
   })
@@ -197,8 +205,8 @@ server = function(input, output) {
   output$annualmortrate_Gender = renderPlot({
     plotDeathsGender = (GenderAge %>% filter(Gender == Gen_Input()) %>% group_by(Year) 
     %>% summarise(rate = (sum(as.numeric(Deaths))/(sum(as.numeric(Population)))*1000)/365))
-    (ggplot(data=plotDeathsGender, aes(x=Year, y=rate, group=1)) + geom_point(size=2, shape=23, color="#1c9099", fill = "#1c9099") 
-      + geom_line(size=1, color="#1c9099") + ylab("Mortality Rate") + theme_bw() 
+    (ggplot(data=plotDeathsGender, aes(x=Year, y=rate, group=1)) + geom_point(size=2, shape=23, color="#E67E22", fill = "#1c9099") 
+      + geom_line(size=1, color="#E67E22") + ylab("Mortality Rate") + theme_bw() 
       + theme(plot.title = element_text(family = "serif", color = "black", size = 18), 
         axis.title = element_text(family = "serif", color = "black", size = 16)) + ggtitle("Annual Mortality Rates by Gender, 1999-2015"))
   })
@@ -232,8 +240,8 @@ server = function(input, output) {
   output$geochart = renderGvis({
     states_year = as.data.frame(YearInput())
     states_year = (states_year %>% filter(DrugAlc_induced_causes == CauseInput()) %>% group_by(State) 
-    %>% summarise(rate = ((sum(as.numeric(Deaths))/(sum(as.numeric(Population)))*1000)/365)*100))
-    gvisGeoChart(states_year,"State", "rate",
+    %>% summarise(Percentage = ((sum(as.numeric(Deaths))/(sum(as.numeric(Population)))*1000)/365)*100))
+    gvisGeoChart(states_year,"State", "Percentage",
                  options=list(region="US", displayMode="regions", 
                               resolution="provinces",
                               width=900, height=700,
