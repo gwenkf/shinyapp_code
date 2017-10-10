@@ -39,7 +39,7 @@ RaceGender = RaceGender[Race != "Not Stated"&Race != "Not Hispanic or Latino", ,
 RaceGender = na.omit(RaceGender)
 
 CauseLabel = list(title = "Cause of Death", size = 13, color = "#17202A")
-PrctLabel = list(title = "Percentage of Deaths", size = 13, color = "#17202A")
+PrctLabel = list(title = "Percentage of Deaths", size = 13, color = "#17202A", exponentformat = "E")
 AgeLabel = list(title = "Ten Year Age Groups", size = 13, color = "#17202A")
 YearLabel = list(title = "Year", size = 13, color = "#17202A")
 TotalLabel = list(title = "Number of Deaths", size = 13, color = "#17202A")
@@ -77,11 +77,7 @@ ui = fluidPage(theme = shinytheme("cosmo"),
                  h2("Mapping Death Rates Across the US"),
                  h3("The map below depicts the percentage of deaths that have occurred in each US state due to drug and alcohol use. The annual mortality rate
                    for each state was converted to a percentage and can be viewed across the years 1999 to 2015 and according to the immediate cause of death of the deceased using the radio buttons and slider bar.
-                    Geographical differences in terms of the prevalence of both causes of death can be observed across the years. Comparison of the 1999 and 2015 maps show 
-                    geographical change in the concentration of drug and alcohol related deaths. In 1999 we can see a higher concentration of drug and alcohol related deaths within
-                    the western states, yet by 2015, we see a number of states along the east cost with comparable rates. In terms of the more
-                    prevalent cause of death, the map shows that between 2012 and 2015 in particular, alcohol-related deaths occurred in higher concentration in states along the west coast, 
-                    while drug-related deaths were more concentrated towards the east coast.")
+                    Geographical differences in terms of the prevalence of drug and/or alcohol related deaths can be observed across the years.")
                ),
                mainPanel(
                  splitLayout(cellWidths = c("40%","70%"), radioButtons("causebutton", label = h3("Select a Cause of Death:"),
@@ -96,8 +92,11 @@ ui = fluidPage(theme = shinytheme("cosmo"),
                fluidRow(
                  h3("How do annual mortality rates differ across racial and ethnic categories? How much do rates of mortality differ between age groups?
                     The following graphs visualize the trends in mortality rates across age groups and racial categories. The rates and percentages
-                    visualized below are extremely small yet, again, the data allow us to better characterize the popluations that are dying
-                    as a result of drug and alcohol use.")
+                    visualized below are extremely small yet, the data allow us to better characterize the popluations that are dying
+                    as a result of drug and alcohol use. The highest death rates overall are observed within the 'American Indian or Alaska Native' and 'White'
+                    categories. In 2015 the American Indian/Alaska Native population experienced a higher percentage of alcohol-related deaths than drug-related deaths,
+                    while the opposite is true for the White population. Further information on any particular Age or Racial group can be accessed using the slider bar and radio
+                    buttons below.")
                  ),
                mainPanel(
                  splitLayout(cellWidths = c("100%", "40%", "70%"), plotOutput("AllDeaths_Race"),
@@ -111,11 +110,12 @@ ui = fluidPage(theme = shinytheme("cosmo"),
                  plotlyOutput("annualmortrate_Age"))
                )
       ),
-      tabPanel("Breakdown by Gender",
+      tabPanel("Breakdown by Sex",
                fluidRow(
-                 h3("Differing rates of drug and alcohol related deaths between men and women are depicted below. While both men and women seem to 
-                    have higher rates of drug-induced deaths than alcohol-induced deaths, There is a notable differece between the two causes of death
-                    across age groups. In both cases, the middle-aged population seems to die from alcohol use moreso than drug use.")
+                 h3("Differing rates of drug and alcohol related deaths between men and women are depicted below. It is interesting to see
+                    that drug-related deaths seem to be more common for both men and women, although the percentage of men dying from either cause
+                    is higher than that of females. Further information on any particular sex or age group can be accessed using the slider bar and
+                    radio buttons below.")
                ),
                mainPanel(
                  splitLayout(cellWidths = c("100%", "40%", "70%") ,plotOutput("annualmortrate_Gender"), 
@@ -208,7 +208,7 @@ server = function(input, output) {
     (ggplot(data=plotDeathsGender, aes(x=Year, y=rate, group=1)) + geom_point(size=2, shape=23, color="#E67E22", fill = "#1c9099") 
       + geom_line(size=1, color="#E67E22") + ylab("Mortality Rate") + theme_bw() 
       + theme(plot.title = element_text(family = "serif", color = "black", size = 18), 
-        axis.title = element_text(family = "serif", color = "black", size = 16)) + ggtitle("Annual Mortality Rates by Gender, 1999-2015"))
+        axis.title = element_text(family = "serif", color = "black", size = 16)) + ggtitle("Annual Mortality Rates by Sex, 1999-2015"))
   })
   
   output$DrugVAlc_GenYear = renderPlotly({
