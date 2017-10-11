@@ -48,14 +48,14 @@ Font = list(family = "Serif", size = 13, color = "black")
 
 
 ui = fluidPage(theme = shinytheme("cosmo"),
-  titlePanel(h1(tags$b("Exploring Mortality Rates by Drug and Alcohol Use in the United States"))),
+  titlePanel(h1(tags$b("Exploring Mortality by Drug and Alcohol Use in the United States"))),
   mainPanel(
     tabsetPanel(
       tabPanel(tags$b("Project Overview"),
                br(),
                br(),
                fluidRow(
-                 splitLayout(cellWidths = c(690, 700), plotlyOutput("avgdeaths_cause"), plotlyOutput("annualmortrate"))
+                 splitLayout(cellWidths = c(700, 700), plotlyOutput("avgdeaths_cause"), plotlyOutput("annualmortrate"))
                ),
                fluidRow(
                  tags$hr(),
@@ -65,8 +65,8 @@ ui = fluidPage(theme = shinytheme("cosmo"),
                     I have set out to discover some of the common trends behind drug and alcohol related mortality in the United States between the years of
                     1999-2015. All of the information provided in the CDC dataset was obtained from death certificates where the immediate cause of death
                     was cited as either drug or alcohol-related. Provided along with that information was the race/ethnicity, gender and age group to which
-                    the deceased belonged.")), br(), 
-                    column(12, h4("The charts above demonstrate the annual mortality rate (deaths per 1,000 persons per year) by drug and alcohol use for each year between 1999 and 2015 as well as the total number of deaths 
+                    the deceased belonged."), br(), 
+                    h4("The charts above demonstrate the annual mortality rate (deaths per 1,000 persons per year) by drug and alcohol use for each year between 1999 and 2015 as well as the total number of deaths 
                     that occurred over that period of time by the cause of death. Although the rates suggest that only a very small portion of the US population is dying 
                     due to these causes, it is evident that the numbers are increasing each year. For a closer look at the populations and areas most affected, refer to 
                     the interactive charts in any of the following three tabs.")
