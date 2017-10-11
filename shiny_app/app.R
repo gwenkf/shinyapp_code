@@ -43,87 +43,89 @@ PrctLabel = list(title = "Percentage of Deaths", size = 13, color = "#17202A", e
 AgeLabel = list(title = "Ten Year Age Groups", size = 13, color = "#17202A")
 YearLabel = list(title = "Year", size = 13, color = "#17202A")
 TotalLabel = list(title = "Number of Deaths", size = 13, color = "#17202A")
+RateLabel = list(title = "Mortality Rate", size = 13, color = "#17202A", exponentformat = "E")
 Font = list(family = "Serif", size = 13, color = "black")
 
 
 ui = fluidPage(theme = shinytheme("cosmo"),
-  titlePanel(h1("Exploring Mortality Rates by Drug and Alcohol Use in the United States")),
+  titlePanel(h1(tags$b("Exploring Mortality Rates by Drug and Alcohol Use in the United States"))),
   mainPanel(
     tabsetPanel(
-      tabPanel("Project Overview",
+      tabPanel(tags$b("Project Overview"),
                br(),
                br(),
                fluidRow(
-                 splitLayout(cellWidths = c("50%", "50%"), plotlyOutput("avgdeaths_cause"), plotOutput("annualmortrate"))
+                 splitLayout(cellWidths = c(690, 700), plotlyOutput("avgdeaths_cause"), plotlyOutput("annualmortrate"))
                ),
                fluidRow(
-                 column(12, h3("The prevalance of drug and alcohol abuse is one of the biggest public health concerns in the United States, particularly
+                 tags$hr(),
+                 h4("The prevalance of drug and alcohol abuse is one of the biggest public health concerns in the United States, particularly
                     as we find ourselves in the midst of what many are calling an 'opioid epidemic.' Drug and Alcohol dependency is an indiscriminate disease,
                     affecting people of all backgrounds across diverse communities. Using mortality data disseminated by the Center for Disease Control, 
                     I have set out to discover some of the common trends behind drug and alcohol related mortality in the United States between the years of
                     1999-2015. All of the information provided in the CDC dataset was obtained from death certificates where the immediate cause of death
                     was cited as either drug or alcohol-related. Provided along with that information was the race/ethnicity, gender and age group to which
                     the deceased belonged.")), br(), 
-                    column(12, h3("The charts below demonstrate the annual mortality rate (deaths per 1,000 persons per year) by drug and alcohol use for each year between 1999 and 2015 as well as the total number of deaths 
+                    column(12, h4("The charts above demonstrate the annual mortality rate (deaths per 1,000 persons per year) by drug and alcohol use for each year between 1999 and 2015 as well as the total number of deaths 
                     that occurred over that period of time by the cause of death. Although the rates suggest that only a very small portion of the US population is dying 
                     due to these causes, it is evident that the numbers are increasing each year. For a closer look at the populations and areas most affected, refer to 
-                    the interactive charts in any of the following three tabs."))
+                    the interactive charts in any of the following three tabs.")
                ),
                mainPanel(
                )
       ),
-      tabPanel("Percentage of Deaths Across US States",
+      tabPanel(tags$b("Mapping Death Rates Across the US"),
                fluidRow(
-                 h2("Mapping Death Rates Across the US"),
-                 h3("The map below depicts the percentage of deaths that have occurred in each US state due to drug and alcohol use. The annual mortality rate
+                 h4("The map below depicts the percentage of deaths that have occurred in each US state due to drug and alcohol use. The annual mortality rate
                    for each state was converted to a percentage and can be viewed across the years 1999 to 2015 and according to the immediate cause of death of the deceased using the radio buttons and slider bar.
                     Geographical differences in terms of the prevalence of drug and/or alcohol related deaths can be observed across the years.")
-               ),
+               ), tags$hr(),
                mainPanel(
-                 splitLayout(cellWidths = c("40%","70%"), radioButtons("causebutton", label = h3("Select a Cause of Death:"),
+                 splitLayout(cellWidths = c(500,400), radioButtons("causebutton", label = h3("Select a Cause of Death:"),
                               choices = list("Drug-Induced" = "Drug-Induced Causes", "Alcohol-Induced" = "Alcohol-Induced Causes",
                                             "Both" = "Total"), selected = "Total"),
                  sliderInput(inputId = "selYear", label = h3("Select A Year:"), min = 1999, 
-                             max = 2015, value = c(2015), step = 1, round = TRUE, sep = "", ticks = TRUE,width = 500)),
+                             max = 2015, value = c(2015), step = 1, round = TRUE, sep = "", ticks = TRUE)),
                  htmlOutput("geochart")
                )
       ),
-      tabPanel("Racial Breakdown",
+      tabPanel(tags$b("Racial Breakdown"),
                fluidRow(
-                 h3("How do annual mortality rates differ across racial and ethnic categories? How much do rates of mortality differ between age groups?
+                 column(12,h4("How do annual mortality rates differ across racial and ethnic categories? How much do rates of mortality differ between age groups?
                     The following graphs visualize the trends in mortality rates across age groups and racial categories. The rates and percentages
                     visualized below are extremely small yet, the data allow us to better characterize the popluations that are dying
                     as a result of drug and alcohol use. The highest death rates overall are observed within the 'American Indian or Alaska Native' and 'White'
                     categories. In 2015 the American Indian/Alaska Native population experienced a higher percentage of alcohol-related deaths than drug-related deaths,
                     while the opposite is true for the White population. Further information on any particular Age or Racial group can be accessed using the slider bar and radio
-                    buttons below.")
-                 ),
+                    buttons below."))
+                 ), tags$hr(),
                mainPanel(
-                 splitLayout(cellWidths = c("100%", "40%", "70%"), plotOutput("AllDeaths_Race"),
+                 splitLayout(cellWidths = c(700, 300, 600), plotlyOutput("AllDeaths_Race"),
                              (radioButtons("racebutton", label = h3("Select Race/Ethnicity:"),choices = list("Black or African American", "American Indian or Alaska Native",
                               "Asian or Pacific Islander", "White", "Hispanic or Latino"), selected = "Black or African American")),
                              (sliderInput(inputId = "slideYear", label = h3("Select A Year:"), min = 1999, 
-                                    max = 2015, value = c(2015), step = 1, round = TRUE, sep = "", ticks = TRUE,width = 500))), 
+                                          max = 2015, value = c(2015), step = 1, round = TRUE, sep = "", ticks = TRUE))),
                  br(),
-                 splitLayout(cellWidths = c("100%", "100%"), 
+                 splitLayout(cellWidths = c(700, 700), 
                  plotlyOutput("DrugVAlc_raceYear"),
-                 plotlyOutput("annualmortrate_Age"))
+                 plotlyOutput("annualmortrate_Age")),
+                 tags$br()
                )
       ),
-      tabPanel("Breakdown by Sex",
+      tabPanel(tags$b("Breakdown by Sex"),
                fluidRow(
-                 h3("Differing rates of drug and alcohol related deaths between men and women are depicted below. It is interesting to see
+                 h4("Differing rates of drug and alcohol related deaths between men and women are depicted below. It is interesting to see
                     that drug-related deaths seem to be more common for both men and women, although the percentage of men dying from either cause
                     is higher than that of females. Further information on any particular sex or age group can be accessed using the slider bar and
                     radio buttons below.")
-               ),
+               ), tags$hr(),
                mainPanel(
-                 splitLayout(cellWidths = c("100%", "40%", "70%") ,plotOutput("annualmortrate_Gender"), 
+                 splitLayout(cellWidths = c(700, 300, 600) ,plotlyOutput("annualmortrate_Gender"), 
                              (radioButtons("genderbutton", label = h3("Select Sex:"), choices = list("Female", "Male"), 
                             selected = "Female")), (sliderInput(inputId = "slideYearGen", label = h3("Select a Year"), 
-                            min = 1999, max = 2015,value = c(2015), step=1, round = TRUE, sep = "", ticks = TRUE, width = 500))),
+                            min = 1999, max = 2015,value = c(2015), step=1, round = TRUE, sep = "", ticks = TRUE))),
                  br(),
-                 splitLayout(cellWidths = c("100%", "100%"),plotlyOutput("DrugVAlc_GenYear"),
+                 splitLayout(cellWidths = c(700, 700),plotlyOutput("DrugVAlc_GenYear"),
                  plotlyOutput("Age_GenYear"))
                )
       )
@@ -142,14 +144,11 @@ server = function(input, output) {
               title = "Total Drug & Alcohol Related Deaths in the USA, 1999-2015", font=Font))
   })
   
-  output$annualmortrate = renderPlot({
+  output$annualmortrate = renderPlotly({
     deathsTotalYr = (Totals_cause %>% filter(DrugAlc_induced_causes == "Total"&Year != "") %>% group_by(Year) 
     %>% summarise(rate = (sum(as.numeric(Deaths))/(sum(as.numeric(Population)))*1000)/365))
-    (ggplot(data=deathsTotalYr, aes(x=Year, y=rate, group=1)) + geom_line(color="#E67E22",size=1) 
-      + geom_point(color="#E67E22", size=2, shape = 23, fill="#E67E22")
-      + theme_bw() + theme(plot.title = element_text(family = "serif", color = "black", size = 18), 
-        axis.title = element_text(family = "serif", color = "black", size = 16))
-      + ylab("Mortality Rate") + ggtitle("Annual Mortality by Drug and Alcohol Use, 1999-2015"))
+    (plot_ly(x = deathsTotalYr$Year, y = deathsTotalYr$rate, type = 'scatter', mode = 'lines', color = c("red")) 
+      %>% layout(xaxis = YearLabel, yaxis = RateLabel, title = "Annual Mortality Rate by Drug & Alcohol Use, 1999-2015", font=Font))
   })
   
   raceInput = reactive({
@@ -180,14 +179,12 @@ server = function(input, output) {
             title = "Percentage of Drug & Alcohol Related Deaths", font=Font))
   })
   
-  output$AllDeaths_Race = renderPlot ({
+  output$AllDeaths_Race = renderPlotly ({
     plot5 = as.data.frame(RaceAge)
     plot5 = (plot5 %>% filter(Race == raceInput()) %>% group_by(Year) 
     %>% summarise(rate = (sum(as.numeric(Deaths))/(sum(as.numeric(Population)))*1000)/365))
-    (ggplot(data = plot5, aes(x = Year, y = rate, group = 1)) + geom_point(size = 2, shape = 23, color = "#E67E22", fill="#E67E22") 
-      + geom_line(color = "#E67E22", size=1) + theme_bw() + theme(plot.title = element_text(family = "serif", color = "black", size = 18), 
-        axis.title = element_text(family = "serif", color = "black", size = 16)) + ggtitle("Annual Mortality by Drug & Alcohol Use") 
-      + xlab("Year") + ylab("Mortality Rate")) 
+    (plot_ly(x = plot5$Year, y = plot5$rate, type = 'scatter', mode = 'lines', color = c("red")) %>% layout(xaxis = YearLabel,
+    yaxis = RateLabel, title = "Annual Mortality by Drug & Alcohol Use", font=Font))
   })
   
   YearGen_Input = reactive ({
@@ -202,13 +199,11 @@ server = function(input, output) {
     GenderAge %>% filter(Year == YearGen_Input()&Gender == Gen_Input())
   })
   
-  output$annualmortrate_Gender = renderPlot({
+  output$annualmortrate_Gender = renderPlotly({
     plotDeathsGender = (GenderAge %>% filter(Gender == Gen_Input()) %>% group_by(Year) 
     %>% summarise(rate = (sum(as.numeric(Deaths))/(sum(as.numeric(Population)))*1000)/365))
-    (ggplot(data=plotDeathsGender, aes(x=Year, y=rate, group=1)) + geom_point(size=2, shape=23, color="#E67E22", fill = "#1c9099") 
-      + geom_line(size=1, color="#E67E22") + ylab("Mortality Rate") + theme_bw() 
-      + theme(plot.title = element_text(family = "serif", color = "black", size = 18), 
-        axis.title = element_text(family = "serif", color = "black", size = 16)) + ggtitle("Annual Mortality Rates by Sex, 1999-2015"))
+    (plot_ly(x = plotDeathsGender$Year, y = plotDeathsGender$rate, type = 'scatter', mode = 'lines', color = c("red")) %>% layout(xaxis = YearLabel,
+      yaxis = RateLabel, title = "Annual Mortality by Drug & Alcohol Use", font=Font))
   })
   
   output$DrugVAlc_GenYear = renderPlotly({
