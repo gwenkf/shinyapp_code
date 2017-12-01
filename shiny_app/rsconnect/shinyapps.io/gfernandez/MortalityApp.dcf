@@ -1,0 +1,12 @@
+name: MortalityApp
+title: MortalityApp
+username:
+account: gfernandez
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 223826
+bundleId: 1107418
+url: https://gfernandez.shinyapps.io/mortalityapp/
+when: 1512085263.84227
+asMultiple: FALSE
+asStatic: FALSE

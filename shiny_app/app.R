@@ -48,7 +48,7 @@ RateLabel = list(title = "Mortality Rate", size = 13, color = "#17202A", exponen
 Font = list(family = "Serif", size = 13, color = "black")
 
 ui = dashboardPage(
-  dashboardHeader(title = "Gwendolyn Fernandez"),
+  dashboardHeader(title = "Gwen Fernandez",titleWidth=240),
   dashboardSidebar(
     #naming sidebar menu links
     sidebarMenu(
@@ -63,14 +63,14 @@ ui = dashboardPage(
     tags$head(tags$style(HTML('
         /* logo */
         .skin-blue .main-header .logo {
-        background-color: #2874A6;
+        background-color: #01579B;
         }
-
+                              
         /* navbar (rest of the header) */
         .skin-blue .main-header .navbar {
-        background-color: #2874A6;
+        background-color: #01579B;
         }
-
+                              
         /*panel background*/
         .content-wrapper, .right-side {
         background-color: #ffffff;
@@ -94,51 +94,58 @@ ui = dashboardPage(
   tabItems(
     #first tab content
     tabItem(tabName = "overview",
+            fluidRow(class="header",h3(class="title",'Exploring Mortality by Drug & Alcohol Use Across the US')),
+            tags$hr(),
             fluidRow(class="overview",box(width = 6, plotlyOutput('avgdeaths_cause')),box(width = 6, plotlyOutput('annualmortrate'))
             ),
             fluidRow(class = "intro",
               tags$hr(),
-              h5("The prevalance of drug and alcohol abuse is one of the biggest public health concerns in the United States, particularly
+              h5(class="pp","The prevalance of drug and alcohol abuse is one of the biggest public health concerns in the United States, particularly
                  as we find ourselves in the midst of what many are calling an 'opioid epidemic.' Drug and Alcohol dependency is an indiscriminate disease,
                  affecting people of all backgrounds across diverse communities. Using mortality data disseminated by the Center for Disease Control, 
                  I have set out to discover some of the common trends behind drug and alcohol related mortality in the United States between the years of
                  1999-2015. All of the information provided in the CDC dataset was obtained from death certificates where the immediate cause of death
                  was cited as either drug or alcohol-related. Provided along with that information was the race/ethnicity, gender and age group to which
                  the deceased belonged."), br(), 
-              h5("The charts above demonstrate the annual mortality rate (deaths per 1,000 persons per year) by drug and alcohol use for each year between 1999 and 2015 as well as the total number of deaths 
+              h5(class="pp","The charts above demonstrate the annual mortality rate (deaths per 1,000 persons per year) by drug and alcohol use for each year between 1999 and 2015 as well as the total number of deaths 
                  that occurred over that period of time by the cause of death. Although the rates suggest that only a very small portion of the US population is dying 
                  due to these causes, it is evident that the numbers are increasing each year. For a closer look at the populations and areas most affected, refer to 
                  the interactive charts in any of the following three tabs.")
               ),
             tags$head(tags$style(
-              ".intro{padding:5px;}
+              ".header{padding:5px;text-align:center;}
+              .title{font-family:Sans-serif;font-size:18;}
+              .pp{font-family:Sans-serif;font-size:13;}
+              .intro{padding:5px;}
               .overview{padding:5px;}"
             ))
     ),
     tabItem(tabName = "map",
             #Second tab content
             fluidRow(class = "mapdes",
-              h5("The map below depicts the percentage of deaths that have occurred in each US state due to drug and alcohol use. The annual mortality rate
+              h5(class="pp","The map below depicts the percentage of deaths that have occurred in each US state due to drug and alcohol use. The annual mortality rate
                  for each state was converted to a percentage and can be viewed across the years 1999 to 2015 and according to the immediate cause of death of the deceased using the radio buttons and slider bar.
                  Geographical differences in terms of the prevalence of drug and/or alcohol related deaths can be observed across the years.")
               ), tags$hr(),
-            fluidRow(class = "controls",box(width = 4, radioButtons("causebutton", label = h3("Select a Cause of Death:"),
+            fluidRow(class = "controls",box(class="box",width = 4, radioButtons("causebutton", label = h3("Select a Cause of Death:"),
                                                  choices = list("Drug-Induced" = "Drug-Induced Causes", "Alcohol-Induced" = "Alcohol-Induced Causes",
                                                                 "Both" = "Total"), selected = "Total")),
-                          box(width = 4, sliderInput(inputId = "selYear", label = h3("Select A Year:"), min = 1999, 
+                          box(class="box",width = 4, sliderInput(inputId = "selYear", label = h3("Select A Year:"), min = 1999, 
                                       max = 2015, value = c(2015), step = 1, round = TRUE, sep = "", ticks = TRUE, animate = TRUE))),
             fluidRow(class = "map",htmlOutput("geochart")
             ),
             tags$head(tags$style(
               ".map{padding:5px;}
               .mapdes{padding:5px;}
+              .box{margin:auto;}
+              .pp{font-family:Sans-Serif;font-size:13;}
               .controls{padding:5px;}"
             ))
             ),
     tabItem(tabName = "race",
             #third tab content
             fluidRow(
-              column(12,h5("How do annual mortality rates differ across racial and ethnic categories? How much do rates of mortality differ between age groups?
+              column(12,h5(class="pp","How do annual mortality rates differ across racial and ethnic categories? How much do rates of mortality differ between age groups?
                            The following graphs visualize the trends in mortality rates across age groups and racial categories. The rates and percentages
                            visualized below are extremely small yet, the data allow us to better characterize the popluations that are dying
                            as a result of drug and alcohol use. The highest death rates overall are observed within the 'American Indian or Alaska Native' and 'White'
@@ -156,6 +163,7 @@ ui = dashboardPage(
               tags$br(),
             tags$head(tags$style(
               ".row1{padding:5px;}
+              .pp{font-family:Sans-serif;font-size:13;}
               .row2{padding:5px;}"
             ))
             )
@@ -163,7 +171,7 @@ ui = dashboardPage(
     tabItem(tabName = "sex",
             #fourth tab content
             fluidRow(class="toprow",
-              h5("Differing rates of drug and alcohol related deaths between men and women are depicted below. It is interesting to see
+              h5(class="pp","Differing rates of drug and alcohol related deaths between men and women are depicted below. It is interesting to see
                  that drug-related deaths seem to be more common for both men and women, although the percentage of men dying from either cause
                  is higher than that of females. Further information on any particular sex or age group can be accessed using the slider bar and
                  radio buttons below.")
@@ -177,6 +185,7 @@ ui = dashboardPage(
                                                 plotlyOutput("Age_GenYear")))),
               tags$head(tags$style(
                 ".row3{padding:5px;}
+                .pp{font-family:Sans-serif;font-size:13;}
                 .row4{padding:5px;}
                 .toprow{padding:5px;"
               ))
